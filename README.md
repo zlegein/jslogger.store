@@ -1,0 +1,4 @@
+jslogger
+========
+
+Javascript logging solution
