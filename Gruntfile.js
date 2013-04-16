@@ -55,11 +55,11 @@ module.exports = function (grunt) {
             }
         },
         watch: {
-            karma: {
+            coffee_test: {
                 files: ['test/coffee/*.coffee'],
-                tasks: ['coffee:test','karma:unit:run'] //NOTE the :run flag
+                tasks: ['coffee:test']
             },
-            coffee: {
+            coffee_src: {
                 files: ['src/coffee/*.coffee'],
                 tasks: ['coffee:build']
             }
@@ -67,7 +67,8 @@ module.exports = function (grunt) {
         karma: {
             unit: {
                 configFile: 'test/karma.conf.js',
-                background: true
+                singleRun: false,
+                autoWatch:true
             }
         },
         livereload: {},
@@ -90,8 +91,7 @@ module.exports = function (grunt) {
         'clean:build',
         'coffee:build',
         'coffee:test',
-        'karma:unit',
-        'watch:karma'
+        'watch'
 
     ]);
 

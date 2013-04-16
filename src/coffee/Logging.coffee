@@ -5,9 +5,9 @@ class JSLogger.Logging
   constructor: (@endpoint, @threshold = JSLogger.Level.DEBUG, @options = null) ->
     flush = options?.flush
     if flush
-      @info("End flushing of jslogger javascript logs", options)
+      @info("Finish flushing jslogger javascript logs", options)
     else
-      @info("Initializing jslogger with threshold:" + @threshold.name + "fors " + window.location.pathname + " with endpoint " + @endpoint)
+      @info("Initializing jslogger with threshold: #{@threshold.name} for path: #{window.location.pathname}, with endpoint #{@endpoint}")
 
   isEnabledFor: (level) ->
     return  level.isGreaterOrEqual(@threshold)
@@ -28,8 +28,8 @@ class JSLogger.Logging
     date = new Date()
     start = if event.level.name then event.level.name.length else 0
     spacer = ""
-    spacer += " " for num in [start..10]
-    return "[#{@formatter.format(date, event.format)}] #{event.level.name}#{spacer}#{event.title} #{event.messages[0]}"
+    spacer += " " for num in [start..8]
+    return "[#{@formatter.format(date, event.format)}]  #{event.level.name}#{spacer}#{event.title} #{event.messages[0]}"
 
   debug: (msg, options) ->
     if @isDebugEnabled
@@ -52,12 +52,14 @@ class JSLogger.Logging
 
   log: (level, params) ->
     event = @createLogEvent(level, params)
-    @store(event)
+    message = @store(event)
+    if message then @send(event, message)
 
   createLogEvent: (level, params) ->
     if level.isGreaterOrEqual(@threshold)
-      options = (param for param in params when param isnt Error and param is Object)
-      messages = (param for param in params when param isnt Error and param isnt Object)
+      results = (param for param in params when param isnt Error and param is Object(param))
+      options = if results then results[0] else null
+      messages = (param for param in params when param isnt Error and param isnt Object(param))
       lastParam = if params.length > 1 then params[params.length - 1]
       exception = if lastParam instanceof Error then lastParam
       return new JSLogger.Event(level, messages, exception, options)
@@ -67,27 +69,23 @@ class JSLogger.Logging
       message = @formatLogMessage(event)
       store.set("jslogger-#{JSON.stringify(new Date().getTime())}", message)
       if event.level.isGreaterOrEqual(JSLogger.Level.ERROR) or event.flush
-        messages = store.getAll()
-        messageStr = 'Begin flushing javascript logs:\n'
-        messageStr += for prop in messages
-          if messages.hasOwnProperty(prop)
-            message = messages[prop]
+        stored = store.getAll()
+        messages = for prop of stored
+          if stored.hasOwnProperty(prop)
+            message = stored[prop]
             if message instanceof Array
-              "#{message[0]}\n"
+              "#{message[0]}"
             else
-              "#{message}\n"
-
-        @send(messageStr)
+              "#{message}"
+        return messages.join('\n')
 
   send: (event, message) ->
     req = new XMLHttpRequest()
 
-    params = "level=i#{event.level.name}&message=#{message}";
+    params = "level=#{event.level.name}&message=#{message}";
     req.open("POST", this.endpoint, true);
 
     req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
-    req.setRequestHeader("Content-length", params.length)
-    req.setRequestHeader("Connection", "close")
 
     req.onreadystatechange = ->
       if req.readyState is 4 and req.status is 200

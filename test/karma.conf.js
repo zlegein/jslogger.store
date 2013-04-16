@@ -21,11 +21,11 @@ files = [
 // use dots reporter, as travis terminal does not support escaping sequences
 // possible values: 'dots', 'progress', 'junit', 'teamcity'
 // CLI --reporters progress
-reporters = ['progress', 'junit'];
+reporters = ['progress', 'junit', 'growl'];
 
 junitReporter = {
     // will be resolved to basePath (in the same way as files/exclude patterns)
-    outputFile: 'test-results.xml'
+    outputFile: 'target/test-results.xml'
 };
 
 // Start these browsers, currently available:
@@ -40,8 +40,4 @@ junitReporter = {
 browsers = ['Chrome'];
 
 autoWatch = true;
-// compile coffee scripts
-preprocessors = {
-    '**/*.coffee': 'coffee'
-};
 

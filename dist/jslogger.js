@@ -4,20 +4,20 @@
   JSLogger.Event = (function() {
     Event.prototype.flush = false;
 
-    Event.prototype.format = '%F %H:%M:%S,%N';
+    Event.prototype.format = '%d %b %Y %H:%M:%S,%N';
 
-    Event.prototype.title = 'JSLogger';
+    Event.prototype.title = '[JSLogger]';
 
     function Event(level, messages, exception, options) {
-      var flush, format, title, _ref, _ref1, _ref2;
+      var _ref, _ref1, _ref2;
 
       this.level = level;
       this.messages = messages;
       this.exception = exception;
       this.options = options;
-      flush = (_ref = this.options) != null ? _ref.flush : void 0;
-      format = (_ref1 = this.options) != null ? _ref1.format : void 0;
-      title = (_ref2 = this.options) != null ? _ref2.title : void 0;
+      this.flush = ((_ref = this.options) != null ? _ref.flush : void 0) ? this.options.flush : this.flush;
+      this.format = ((_ref1 = this.options) != null ? _ref1.format : void 0) ? this.options.format : this.format;
+      this.title = ((_ref2 = this.options) != null ? _ref2.title : void 0) ? this.options.title : this.title;
     }
 
     Event.prototype.getCombinedMessages = function() {
@@ -249,9 +249,9 @@
       this.options = options != null ? options : null;
       flush = options != null ? options.flush : void 0;
       if (flush) {
-        this.info("End flushing of jslogger javascript logs", options);
+        this.info("Finish flushing jslogger javascript logs", options);
       } else {
-        this.info("Initializing jslogger with threshold:" + this.threshold.name + "fors " + window.location.pathname + " with endpoint " + this.endpoint);
+        this.info("Initializing jslogger with threshold: " + this.threshold.name + " for path: " + window.location.pathname + ", with endpoint " + this.endpoint);
       }
     }
 
@@ -281,10 +281,10 @@
       date = new Date();
       start = event.level.name ? event.level.name.length : 0;
       spacer = "";
-      for (num = _i = start; start <= 10 ? _i <= 10 : _i >= 10; num = start <= 10 ? ++_i : --_i) {
+      for (num = _i = start; start <= 8 ? _i <= 8 : _i >= 8; num = start <= 8 ? ++_i : --_i) {
         spacer += " ";
       }
-      return "[" + (this.formatter.format(date, event.format)) + "] " + event.level.name + spacer + event.title + " " + event.messages[0];
+      return "[" + (this.formatter.format(date, event.format)) + "]  " + event.level.name + spacer + event.title + " " + event.messages[0];
     };
 
     Logging.prototype.debug = function(msg, options) {
@@ -316,35 +316,39 @@
     };
 
     Logging.prototype.log = function(level, params) {
-      var event;
+      var event, message;
 
       event = this.createLogEvent(level, params);
-      return this.store(event);
+      message = this.store(event);
+      if (message) {
+        return this.send(event, message);
+      }
     };
 
     Logging.prototype.createLogEvent = function(level, params) {
-      var exception, lastParam, messages, options, param;
+      var exception, lastParam, messages, options, param, results;
 
       if (level.isGreaterOrEqual(this.threshold)) {
-        options = (function() {
+        results = (function() {
           var _i, _len, _results;
 
           _results = [];
           for (_i = 0, _len = params.length; _i < _len; _i++) {
             param = params[_i];
-            if (param !== Error && param === Object) {
+            if (param !== Error && param === Object(param)) {
               _results.push(param);
             }
           }
           return _results;
         })();
+        options = results ? results[0] : null;
         messages = (function() {
           var _i, _len, _results;
 
           _results = [];
           for (_i = 0, _len = params.length; _i < _len; _i++) {
             param = params[_i];
-            if (param !== Error && param !== Object) {
+            if (param !== Error && param !== Object(param)) {
               _results.push(param);
             }
           }
@@ -357,26 +361,24 @@
     };
 
     Logging.prototype.store = function(event) {
-      var message, messageStr, messages, prop;
+      var message, messages, prop, stored;
 
       if (store.enabled) {
         message = this.formatLogMessage(event);
         store.set("jslogger-" + (JSON.stringify(new Date().getTime())), message);
         if (event.level.isGreaterOrEqual(JSLogger.Level.ERROR) || event.flush) {
-          messages = store.getAll();
-          messageStr = 'Begin flushing javascript logs:\n';
-          messageStr += (function() {
-            var _i, _len, _results;
+          stored = store.getAll();
+          messages = (function() {
+            var _results;
 
             _results = [];
-            for (_i = 0, _len = messages.length; _i < _len; _i++) {
-              prop = messages[_i];
-              if (messages.hasOwnProperty(prop)) {
-                message = messages[prop];
+            for (prop in stored) {
+              if (stored.hasOwnProperty(prop)) {
+                message = stored[prop];
                 if (message instanceof Array) {
-                  _results.push("" + message[0] + "\n");
+                  _results.push("" + message[0]);
                 } else {
-                  _results.push("" + message + "\n");
+                  _results.push("" + message);
                 }
               } else {
                 _results.push(void 0);
@@ -384,7 +386,7 @@
             }
             return _results;
           })();
-          return this.send(messageStr);
+          return messages.join('\n');
         }
       }
     };
@@ -393,11 +395,9 @@
       var params, req;
 
       req = new XMLHttpRequest();
-      params = "level=i" + event.level.name + "&message=" + message;
+      params = "level=" + event.level.name + "&message=" + message;
       req.open("POST", this.endpoint, true);
       req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      req.setRequestHeader("Content-length", params.length);
-      req.setRequestHeader("Connection", "close");
       req.onreadystatechange = function() {
         if (req.readyState === 4 && req.status === 200) {
           return store.clear();
