@@ -1,5 +1,51 @@
 jslogger
 ========
 
-This is a really new project and still needs docs, stay tuned, sorry, i will buy you a beer.
+Installation
+------
+
+There are two distributable version of the jslogger. 
+
+* The bundled one includes the dependent [store.js](https://github.com/marcuswestin/store.js) by Marcus Westin.
+* The non bundled version excludes this library, but note you will need to have it included in your project.
+
+Setup
+------
+
+Setup a global namespace for your logger like so:
+
+``` javascript
+var myapp = myapp || {};
+myapp.logger = new JSLogger.Logging('/my/server/enpoint', JSLogger.Level.INFO, {title:'[My App]'});
+```
+
+* endpoint - the server endpoint url you want to send logging information to
+* the logging threshold you want to use
+* options - see below
+
+
+### Options
+
+* title: the title message for the logs. Default is: `[JSLogger]`
+* flush: whether or not to force a dump of all the stored logs from local storage. Defalut is: `true`
+* format: the format of the timestamp you want to set for the logs. Default is: `'%d %b %Y %H:%M:%S,%N'`
+
+
+Development
+------------
+You need [Node](http://nodejs.org/) version 0.6.2 or later installed on your system. Node is extremely easy to install and has a small footprint, and is really awesome otherwise too, so [just do it](http://nodejs.org/).
+
+Once you have Node installed:
+
+    ```npm install
+    
+This will install all the `jslogger` dependent node modules needed for development
+
+Thanks
+-----
+
+* The timestamp formatter is a public utility take from [Date Formatter](https://gist.github.com/fauxparse/1508172)
+* Many Thanks to Marcus Westin for [store.js](https://github.com/marcuswestin/store.js) to make this possible
+* 
+
 
