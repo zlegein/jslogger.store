@@ -242,17 +242,10 @@
     Logging.prototype.formatter = new JSLogger.Formatter();
 
     function Logging(endpoint, threshold, options) {
-      var flush;
-
       this.endpoint = endpoint;
       this.threshold = threshold != null ? threshold : JSLogger.Level.DEBUG;
-      this.options = options != null ? options : null;
-      flush = options != null ? options.flush : void 0;
-      if (flush) {
-        this.info("Finish flushing jslogger javascript logs", options);
-      } else {
-        this.info("Initializing jslogger with threshold: " + this.threshold.name + " for path: " + window.location.pathname + ", with endpoint " + this.endpoint);
-      }
+      this.options = options;
+      this.info("Initializing jslogger with threshold: " + this.threshold.name + " for path: " + window.location.pathname + ", with endpoint " + this.endpoint, this.options);
     }
 
     Logging.prototype.isEnabledFor = function(level) {
@@ -287,32 +280,32 @@
       return "[" + (this.formatter.format(date, event.format)) + "]  " + event.level.name + spacer + event.title + " " + event.messages[0];
     };
 
-    Logging.prototype.debug = function(msg, options) {
+    Logging.prototype.debug = function() {
       if (this.isDebugEnabled) {
-        return this.log(JSLogger.Level.DEBUG, [msg, options]);
+        return this.log(JSLogger.Level.DEBUG, arguments);
       }
     };
 
-    Logging.prototype.info = function(msg, options) {
+    Logging.prototype.info = function() {
       if (this.isInfoEnabled) {
-        return this.log(JSLogger.Level.INFO, [msg, options]);
+        return this.log(JSLogger.Level.INFO, arguments);
       }
     };
 
-    Logging.prototype.warn = function(msg, options) {
+    Logging.prototype.warn = function() {
       if (this.isWarnEnabled) {
-        return this.log(JSLogger.Level.WARN, [msg, options]);
+        return this.log(JSLogger.Level.WARN, arguments);
       }
     };
 
-    Logging.prototype.error = function(msg, options) {
+    Logging.prototype.error = function() {
       if (this.isErrorEnabled) {
-        return this.log(JSLogger.Level.ERROR, [msg, options]);
+        return this.log(JSLogger.Level.ERROR, arguments);
       }
     };
 
-    Logging.prototype.fatal = function(msg, options) {
-      return this.log(JSLogger.Level.FATAL, [msg, options]);
+    Logging.prototype.fatal = function() {
+      return this.log(JSLogger.Level.FATAL, arguments);
     };
 
     Logging.prototype.log = function(level, params) {
@@ -360,6 +353,14 @@
       }
     };
 
+    Logging.prototype.getInitialMessage = function() {
+      var event, message;
+
+      message = 'Flushing stored javascript logs....';
+      event = this.createLogEvent(JSLogger.Level.INFO, [message]);
+      return this.formatLogMessage(event);
+    };
+
     Logging.prototype.store = function(event) {
       var message, messages, prop, stored;
 
@@ -386,6 +387,7 @@
             }
             return _results;
           })();
+          messages.unshift(this.getInitialMessage());
           return messages.join('\n');
         }
       }

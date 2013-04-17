@@ -2,12 +2,8 @@ window.JSLogger or= {}
 class JSLogger.Logging
   formatter: new JSLogger.Formatter()
 
-  constructor: (@endpoint, @threshold = JSLogger.Level.DEBUG, @options = null) ->
-    flush = options?.flush
-    if flush
-      @info("Finish flushing jslogger javascript logs", options)
-    else
-      @info("Initializing jslogger with threshold: #{@threshold.name} for path: #{window.location.pathname}, with endpoint #{@endpoint}")
+  constructor: (@endpoint, @threshold = JSLogger.Level.DEBUG, @options) ->
+      @info("Initializing jslogger with threshold: #{@threshold.name} for path: #{window.location.pathname}, with endpoint #{@endpoint}", @options)
 
   isEnabledFor: (level) ->
     return  level.isGreaterOrEqual(@threshold)
@@ -31,24 +27,24 @@ class JSLogger.Logging
     spacer += " " for num in [start..8]
     return "[#{@formatter.format(date, event.format)}]  #{event.level.name}#{spacer}#{event.title} #{event.messages[0]}"
 
-  debug: (msg, options) ->
+  debug: () ->
     if @isDebugEnabled
-      @log(JSLogger.Level.DEBUG, [msg, options])
+      @log(JSLogger.Level.DEBUG, arguments)
 
-  info: (msg, options) ->
+  info: () ->
     if @isInfoEnabled
-      @log(JSLogger.Level.INFO, [msg, options])
+      @log(JSLogger.Level.INFO, arguments)
 
-  warn: (msg, options) ->
+  warn: () ->
     if @isWarnEnabled
-      @log(JSLogger.Level.WARN, [msg, options])
+      @log(JSLogger.Level.WARN, arguments)
 
-  error: (msg, options) ->
+  error: () ->
     if @isErrorEnabled
-      @log(JSLogger.Level.ERROR, [msg, options])
+      @log(JSLogger.Level.ERROR, arguments)
 
-  fatal: (msg, options) ->
-    @log(JSLogger.Level.FATAL, [msg, options])
+  fatal: () ->
+    @log(JSLogger.Level.FATAL, arguments)
 
   log: (level, params) ->
     event = @createLogEvent(level, params)
@@ -64,6 +60,11 @@ class JSLogger.Logging
       exception = if lastParam instanceof Error then lastParam
       return new JSLogger.Event(level, messages, exception, options)
 
+  getInitialMessage:() ->
+    message = 'Flushing stored javascript logs....'
+    event = @createLogEvent(JSLogger.Level.INFO, [message])
+    return @formatLogMessage(event)
+
   store: (event) ->
     if store.enabled
       message = @formatLogMessage(event)
@@ -77,21 +78,19 @@ class JSLogger.Logging
               "#{message[0]}"
             else
               "#{message}"
+        messages.unshift(@getInitialMessage())
         return messages.join('\n')
+
 
   send: (event, message) ->
     req = new XMLHttpRequest()
-
-    params = "level=#{event.level.name}&message=#{message}";
-    req.open("POST", this.endpoint, true);
-
+    params = "level=#{event.level.name}&message=#{message}"
+    req.open("POST", this.endpoint, true)
     req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
-
     req.onreadystatechange = ->
       if req.readyState is 4 and req.status is 200
         store.clear()
       else
         store.clear()
-
     req.send(params)
 
