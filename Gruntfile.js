@@ -3,8 +3,6 @@
 module.exports = function (grunt) {
     // load all grunt tasks
     require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
-    grunt.loadNpmTasks('grunt-testem');
-
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -15,6 +13,10 @@ module.exports = function (grunt) {
             dist: {
                 src: ['target/build/js/Globals.js', 'target/build/js/Event.js', 'target/build/js/Level.js', 'target/build/js/Formatter.js', 'target/build/js/Logging.js'],
                 dest: 'dist/<%= pkg.name %>.js'
+            },
+            bundle: {
+                src: ['lib/store.js','target/build/js/Globals.js', 'target/build/js/Event.js', 'target/build/js/Level.js', 'target/build/js/Formatter.js', 'target/build/js/Logging.js'],
+                dest: 'dist/<%= pkg.name %>-all.js'
             }
         },
         uglify: {
@@ -98,7 +100,8 @@ module.exports = function (grunt) {
     grunt.registerTask('build', [
         'clean:build',
         'coffee:build',
-        'concat:dist'
+        'concat:dist',
+        'concat:bundle'
     ]);
 
     grunt.registerTask('default', ['build']);
