@@ -1,5 +1,3 @@
-jslogger
-========
 
 Installation
 ------
@@ -23,6 +21,17 @@ myapp.logger = new JSLogger.Logging('/my/server/enpoint', JSLogger.Level.INFO, {
 * the logging threshold you want to use
 * options - see below
 
+Snippet of how to use the logger:
+
+``` javascript
+if(beer) {
+    myapp.logger.info("you are good person!");
+} else {
+    myapp.logger.error("you are a bad person!", new Error('how dare you!');
+}
+```
+
+The logs will be flushed to the server when there is a log of greater than `ERROR` or the `flush` flag is set to `true` 
 
 ### Options
 
