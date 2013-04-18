@@ -37,7 +37,7 @@ You need [Node](http://nodejs.org/) version 0.6.2 or later installed on your sys
 
 Once you have Node installed:
 
-    ```npm install
+    npm install
     
 This will install all the `jslogger` dependent node modules needed for development
 
@@ -46,6 +46,5 @@ Thanks
 
 * The timestamp formatter is a public utility take from [Date Formatter](https://gist.github.com/fauxparse/1508172)
 * Many Thanks to Marcus Westin for [store.js](https://github.com/marcuswestin/store.js) to make this possible
-* 
 
 
