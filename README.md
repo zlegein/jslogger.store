@@ -1,4 +1,3 @@
-
 Installation
 ------
 
@@ -31,12 +30,12 @@ if(beer) {
 }
 ```
 
-The logs will be flushed to the server when there is a log of greater than `ERROR` or the `flush` flag is set to `true` 
+The logs will be flushed to the server when there is a log event greater than `ERROR` or the `flush` flag is set to `true` 
 
 ### Options
 
 * title: the title message for the logs. Default is: `[JSLogger]`
-* flush: whether or not to force a dump of all the stored logs from local storage. Defalut is: `true`
+* flush: whether or not to force a dump of all the stored logs from local storage. Defalut is: `false`
 * format: the format of the timestamp you want to set for the logs. Default is: `'%d %b %Y %H:%M:%S,%N'`
 
 
