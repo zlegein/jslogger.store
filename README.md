@@ -31,7 +31,7 @@ Snippet of how to use the logger:
 
 ``` javascript
 if(beer) {
-    myapp.logger.info("you are good person!");
+    myapp.logger.info("you are a good person!");
 } else {
     myapp.logger.error("you are a bad person!", new Error('how dare you!');
 }
