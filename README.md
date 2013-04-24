@@ -1,3 +1,10 @@
+About
+-------
+
+There are a ton of javascript loggers out there, but I was unable to find any that completely fit. 
+This jslogger takes advantage of the browsers LocalStorage to store log events and then will only send them to the
+configured endpoint when there is a log event level that is `error` or above, or stated in the log event options.
+
 Installation
 ------
 
