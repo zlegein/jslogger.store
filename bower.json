@@ -1,0 +1,13 @@
+{
+  "name": "jslogger",
+  "version": "0.5.0",
+  "main": "dist/jslogger-store.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components"
+  ],
+   "dependencies": {
+    "store-js": "latest"
+  }
+}
