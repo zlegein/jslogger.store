@@ -1,5 +1,5 @@
 {
-  "name": "jslogger",
+  "name": "jslogger-store",
   "version": "0.5.0",
   "main": "dist/jslogger-store.js",
   "ignore": [
