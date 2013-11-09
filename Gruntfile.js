@@ -16,7 +16,7 @@ module.exports = function (grunt) {
             },
             bundle: {
                 src: ['components/store-js/store.js','target/build/js/Globals.js', 'target/build/js/Event.js', 'target/build/js/Level.js', 'target/build/js/Formatter.js', 'target/build/js/Logging.js'],
-                dest: 'dist/<%= pkg.name %>-store.js'
+                dest: 'dist/<%= pkg.name %>.store.js'
             }
         },
         uglify: {
