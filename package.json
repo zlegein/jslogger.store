@@ -1,17 +1,16 @@
 {
-  "name": "jslogger",
-  "version": "0.1.0",
-  "description": "Simple Javascript Logger",
-  "main": "logging.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "name": "jslogger.store",
+  "version": "v0.5.1",
+  "description": "Simple Javascript Logger using browswer local storage",
+  "main": "dist/jslogger.store.js",
   "repository": {
-    "type": "git",
-    "url": "zlegein/jslogger"
+      "type": "git",
+      "url": "git://github.com/zlegein/jslogger.store.git"
   },
-  "author": "zlegein",
-  "license": "BSD",
+  "author": "Zach Legein",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "keywords": ["jslogger", "store"]
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-copy": "~0.4.0",
