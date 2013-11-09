@@ -15,8 +15,8 @@ module.exports = function (grunt) {
                 dest: 'dist/<%= pkg.name %>.js'
             },
             bundle: {
-                src: ['lib/store.js','target/build/js/Globals.js', 'target/build/js/Event.js', 'target/build/js/Level.js', 'target/build/js/Formatter.js', 'target/build/js/Logging.js'],
-                dest: 'dist/<%= pkg.name %>-all.js'
+                src: ['components/store-js/store.js','target/build/js/Globals.js', 'target/build/js/Event.js', 'target/build/js/Level.js', 'target/build/js/Formatter.js', 'target/build/js/Logging.js'],
+                dest: 'dist/<%= pkg.name %>-store.js'
             }
         },
         uglify: {
@@ -93,6 +93,7 @@ module.exports = function (grunt) {
         'clean:build',
         'coffee:build',
         'coffee:test',
+        'karma:unit',
         'watch'
 
     ]);

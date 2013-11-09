@@ -15,7 +15,7 @@ files = [
     JASMINE_ADAPTER,
     'target/build/js/*.js',
     'target/test/js/*.js',
-    'lib/*.js'
+    'components/store-js/store.js'
 ];
 
 // use dots reporter, as travis terminal does not support escaping sequences
