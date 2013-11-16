@@ -10,7 +10,7 @@
   "author": "Zach Legein",
   "license": "MIT",
   "readmeFilename": "README.md",
-  "keywords": ["jslogger", "store"]
+  "keywords": ["jslogger", "store"],
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-copy": "~0.4.0",

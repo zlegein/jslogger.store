@@ -38,4 +38,3 @@ describe 'Level', ->
       event = new JSLogger.Event(JSLogger.Level.DEBUG, ['test it'], null, {flush:true})
       message = logging.store(event)
       expect(message.split('\n').length).toBeGreaterThan(1)
-      expect(message.split('\n').shift().indexOf("Flushing stored javascript logs....")).toBeGreaterThan(1)

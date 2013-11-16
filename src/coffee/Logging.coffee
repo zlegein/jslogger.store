@@ -60,11 +60,6 @@ class JSLogger.Logging
       exception = if lastParam instanceof Error then lastParam
       return new JSLogger.Event(level, messages, exception, options)
 
-  getInitialMessage:() ->
-    message = 'Flushing stored javascript logs....'
-    event = @createLogEvent(JSLogger.Level.INFO, [message])
-    return @formatLogMessage(event)
-
   store: (event) ->
     if store.enabled
       message = @formatLogMessage(event)
@@ -78,7 +73,6 @@ class JSLogger.Logging
               "#{message[0]}"
             else
               "#{message}"
-        messages.unshift(@getInitialMessage())
         return messages.join('\n')
 
 

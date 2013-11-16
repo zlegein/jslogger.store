@@ -507,13 +507,6 @@
       }
     };
 
-    Logging.prototype.getInitialMessage = function() {
-      var event, message;
-      message = 'Flushing stored javascript logs....';
-      event = this.createLogEvent(JSLogger.Level.INFO, [message]);
-      return this.formatLogMessage(event);
-    };
-
     Logging.prototype.store = function(event) {
       var message, messages, prop, stored;
       if (store.enabled) {
@@ -538,7 +531,6 @@
             }
             return _results;
           })();
-          messages.unshift(this.getInitialMessage());
           return messages.join('\n');
         }
       }

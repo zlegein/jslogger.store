@@ -37,11 +37,7 @@ class JSLogger.Formatter
       s = Math.abs(number).toString()
       s = "0" + s while s.length < digits
       (if number < 0 then "-" else (if signed then "+" else "")) + s
-     
 
-     
-
-     
     format: (date, fmt) ->
       parts = (fmt || "%c").split "%%"
       for own char, callback of @formats(date)
