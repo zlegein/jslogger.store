@@ -20,13 +20,6 @@ class JSLogger.Logging
   isErrorEnabled: () ->
     return @isEnabledFor(JSLogger.Level.ERROR)
 
-  formatLogMessage: (event) ->
-    date = new Date()
-    start = if event.level.name then event.level.name.length else 0
-    spacer = ""
-    spacer += " " for num in [start..8]
-    return "[#{@formatter.format(date, event.format)}]  #{event.level.name}#{spacer}#{event.title} #{event.messages[0]}"
-
   debug: () ->
     if @isDebugEnabled
       @log(JSLogger.Level.DEBUG, arguments)
@@ -48,8 +41,8 @@ class JSLogger.Logging
 
   log: (level, params) ->
     event = @createLogEvent(level, params)
-    message = @store(event)
-    if message then @send(event, message)
+    messages = @store(event)
+    if messages then @send(messages)
 
   createLogEvent: (level, params) ->
     if level.isGreaterOrEqual(@threshold)
@@ -62,23 +55,18 @@ class JSLogger.Logging
 
   store: (event) ->
     if store.enabled
-      message = @formatLogMessage(event)
-      store.set("jslogger-#{JSON.stringify(new Date().getTime())}", message)
+      store.set("jslogger-#{JSON.stringify(new Date().getTime())}", {level:event.level.name, message: "#{event.title} #{event.messages[0]}"})
       if event.level.isGreaterOrEqual(JSLogger.Level.ERROR) or event.flush
         stored = store.getAll()
         messages = for prop of stored
           if stored.hasOwnProperty(prop)
-            message = stored[prop]
-            if message instanceof Array
-              "#{message[0]}"
-            else
-              "#{message}"
-        return messages.join('\n')
+            stored[prop]
+        return messages
 
 
-  send: (event, message) ->
+  send: (messages) ->
     req = new XMLHttpRequest()
-    params = "level=#{event.level.name}&message=#{message}"
+    params = "messages=#{JSON.stringify(messages)}"
     req.open("POST", this.endpoint, true)
     req.setRequestHeader("Content-type", "application/x-www-form-urlencoded")
     req.onreadystatechange = ->

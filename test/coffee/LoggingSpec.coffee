@@ -1,4 +1,5 @@
 describe 'Level', ->
+
   describe 'createLogEvent()', ->
     it 'should create a new Logging Event', ->
       logging = new JSLogger.Logging('/test/me')
@@ -20,13 +21,6 @@ describe 'Level', ->
       expect(event.exception.message).toBe('me no likey')
       expect(event.title).toBe('tester')
 
-  describe 'formatLogMessage()', ->
-    it 'should format the log message with proper prefix', ->
-      logging = new JSLogger.Logging('/test/me')
-      event = new JSLogger.Event(JSLogger.Level.DEBUG, ['test it'])
-      results = logging.formatLogMessage(event)
-      expect(results.indexOf('test it')).toBeGreaterThan(1)
-
   describe 'store()', ->
     it 'should return no messages', ->
       logging = new JSLogger.Logging('/test/me')
@@ -34,7 +28,9 @@ describe 'Level', ->
       message = logging.store(event)
       expect(message).toBeUndefined()
     it 'should return a bunch of messages', ->
-      logging = new JSLogger.Logging('/test/me')
+      logging = new JSLogger.Logging('/test/me/')
       event = new JSLogger.Event(JSLogger.Level.DEBUG, ['test it'], null, {flush:true})
-      message = logging.store(event)
-      expect(message.split('\n').length).toBeGreaterThan(1)
+      messages = logging.store(event)
+      expect(messages.length).toBe(2)
+      expect(messages[0].level).toBe('INFO')
+      expect(messages[1].message.indexOf('test it')).toBeTruthy()

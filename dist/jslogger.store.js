@@ -427,17 +427,6 @@
       return this.isEnabledFor(JSLogger.Level.ERROR);
     };
 
-    Logging.prototype.formatLogMessage = function(event) {
-      var date, num, spacer, start, _i;
-      date = new Date();
-      start = event.level.name ? event.level.name.length : 0;
-      spacer = "";
-      for (num = _i = start; start <= 8 ? _i <= 8 : _i >= 8; num = start <= 8 ? ++_i : --_i) {
-        spacer += " ";
-      }
-      return "[" + (this.formatter.format(date, event.format)) + "]  " + event.level.name + spacer + event.title + " " + event.messages[0];
-    };
-
     Logging.prototype.debug = function() {
       if (this.isDebugEnabled) {
         return this.log(JSLogger.Level.DEBUG, arguments);
@@ -467,11 +456,11 @@
     };
 
     Logging.prototype.log = function(level, params) {
-      var event, message;
+      var event, messages;
       event = this.createLogEvent(level, params);
-      message = this.store(event);
-      if (message) {
-        return this.send(event, message);
+      messages = this.store(event);
+      if (messages) {
+        return this.send(messages);
       }
     };
 
@@ -508,10 +497,12 @@
     };
 
     Logging.prototype.store = function(event) {
-      var message, messages, prop, stored;
+      var messages, prop, stored;
       if (store.enabled) {
-        message = this.formatLogMessage(event);
-        store.set("jslogger-" + (JSON.stringify(new Date().getTime())), message);
+        store.set("jslogger-" + (JSON.stringify(new Date().getTime())), {
+          level: event.level.name,
+          message: "" + event.title + " " + event.messages[0]
+        });
         if (event.level.isGreaterOrEqual(JSLogger.Level.ERROR) || event.flush) {
           stored = store.getAll();
           messages = (function() {
@@ -519,27 +510,22 @@
             _results = [];
             for (prop in stored) {
               if (stored.hasOwnProperty(prop)) {
-                message = stored[prop];
-                if (message instanceof Array) {
-                  _results.push("" + message[0]);
-                } else {
-                  _results.push("" + message);
-                }
+                _results.push(stored[prop]);
               } else {
                 _results.push(void 0);
               }
             }
             return _results;
           })();
-          return messages.join('\n');
+          return messages;
         }
       }
     };
 
-    Logging.prototype.send = function(event, message) {
+    Logging.prototype.send = function(messages) {
       var params, req;
       req = new XMLHttpRequest();
-      params = "level=" + event.level.name + "&message=" + message;
+      params = "messages=" + (JSON.stringify(messages));
       req.open("POST", this.endpoint, true);
       req.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
       req.onreadystatechange = function() {
