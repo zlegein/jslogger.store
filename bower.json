@@ -1,6 +1,6 @@
 {
   "name": "jslogger.store",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "main": "dist/jslogger.store.js",
   "ignore": [
     "**/.*",
